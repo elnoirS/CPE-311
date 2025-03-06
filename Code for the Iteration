@@ -1,0 +1,46 @@
+class Meals:
+    def __init__(self, meal, value):
+        self.meal = meal
+        self.value = value
+    
+    def get_meal(self):
+        return self.meal
+    
+    def get_value(self):
+        return self.value
+
+    def __str__(self):
+        return self.meal + ': ' + str(self.value) + ' pesos'
+
+def createMeal(meal, value):
+    return [Meals(meal[i], value[i]) for i in range(len(meal))]
+
+def MealSelection(meal, n):
+    m = len(meal)
+    table = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(1, m + 1):
+        for w in range(n + 1):
+            if meal[i - 1].get_value() <= w:
+                table[i][w] = max(table[i - 1][w], meal[i - 1].get_value() + table[i - 1][w - meal[i - 1].get_value()])
+            else:
+                table[i][w] = table[i - 1][w]
+    w = n
+    money = []
+    for i in range(m, 0, -1):
+        if table[i][w] != table[i - 1][w]:
+            money.append(meal[i - 1])
+            w -= meal[i - 1].get_value()
+    return money, table[m][n]
+    
+def display(meal, n):
+    taken, val = MealSelection(meal, n)
+    print('Total value of items taken is', val, 'pesos')
+    for item in taken:
+        print(' ', item)
+
+meals = ['Hotsilog', 'Sisig', 'Lechon Kawali', 'Kare-kare', 'Tapsilog', 'Burger Steak', 'Chicken Pastil']
+values = [110, 120, 98, 94, 85, 117, 27]
+n = int(input("Please enter your maximum allowance: "))
+meal = createMeal(meals, values)
+display(meal, n)
+
